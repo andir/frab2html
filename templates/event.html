@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="main" class="row">
+  <div id="content" class="col12 hentry">
+
+    {% include 'navbar.html' %}
+
+<h1>{{ event.title }}</h1>
+
+<p>
+  By {%- for speaker in event.speakers %}
+  <a href="../speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
+  {%- endfor %}
+</p>
+
+{{ event['abstract']|nl2br }}
+
+{{ event['description']|nl2br }}
+      </div>
+    </div>
+
+{% endblock %}

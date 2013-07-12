@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block head %}
+<script type="text/javascript">
+    jQuery(document).ready(function($) {
+    $('.schedulelist tr:nth-child(even)').addClass('alternate');
+    })
+</script>
+{% endblock %}
+
+{% block content %}
+
+<div id="main" class="row">
+  <div id="content" class="col12">
+
+    {% include 'navbar.html' %}
+
+    <h1>Events</h1>
+
+    <table class="schedulelist">
+      {% for event in event_list  %}
+      <tr>
+	<td><a href="event/{{ event.id }}.html">{{ event.title }}</a></td>
+	<td>
+	  {%- for speaker in event.speakers %}
+	  <p><a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a></p>
+	  {%- endfor %}
+	</td>
+	<td>
+	  {{ event.abstract|nl2br }}
+	</td>
+      </tr>
+      {% endfor %}
+    </table>
+
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,27 @@
+.schedule td.event, .schedule th {
+    padding: 3px;
+    height: 20px;
+    background: #f0f0f0;
+    vertical-align: top;
+}
+
+.schedule th.time {
+    text-align: left;
+    vertical-align: top;
+}
+
+.schedule th.room {
+    min-width: 70px;
+}
+
+.schedulelist tr.alternate td {
+    background: #f0f0f0;
+}
+
+.schedulelist td {
+    vertical-align: top;
+}
+
+.schedulelist p {
+    margin-top: 0px;
+}

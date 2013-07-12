@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div id="main">
+  <div id="content">
+
+    <div class="row">
+      <div class="col12">
+	{% include 'navbar.html' %}
+      </div>
+    </div>
+
+    <h1>Day {{ day.number }} - {{ day.date }}</h1>
+
+    <table class="schedule">
+      <tr>
+	<th></th>
+	{%- for room in rooms %}
+	<th class="room">{{ room }}</th>
+	{%- endfor %}
+      </tr>
+      {%- for row in schedule %}
+      <tr>
+	{%- for item in row %}
+	{%- if loop.first %}
+	{%- if item %}
+	<th class="time">{{ item }}</th>
+	{%- else %}
+	<th></th>
+	{%- endif %}
+	{%- else %}
+	<td{% if item %} rowspan="{{ item.slots }}" class="event"{% endif %}>
+	  {% if item %}
+	  <a href="event/{{ item.id }}.html">{{ item.title }}</a><br>
+	  {% if item.speakers %}
+	  by&nbsp;
+	  {%- for speaker in item.speakers -%}
+	  <a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
+	  {%- endfor %}
+	  {%- endif %}
+	  {%- endif %}
+	</td>
+	{%- endif %}
+	{%- endfor %}
+      </tr>
+      {%- endfor %}
+      <tr>
+	<th></th>
+	{%- for room in rooms %}
+	<th class="room">{{ room }}</th>
+	{%- endfor %}
+      </tr>
+    </table>
+  </div>
+</div>
+
+{% endblock %}

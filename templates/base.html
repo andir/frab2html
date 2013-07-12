@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width">
+    <title>Schedule</title>
+    <link rel="stylesheet" type="text/css" media="all" href="https://ohm2013.org/site/wp-content/uploads/montezuma/style.css">
+    <link rel="stylesheet" type="text/css" media="all" href="/schedule.css">
+    <script type="text/javascript" src="https://ohm2013.org/site/wp-includes/js/jquery/jquery.js"></script>
+    <script type="text/javascript" src="https://ohm2013.org/site/wp-includes/js/jquery/ui/jquery.ui.core.min.js?ver=1.9.2"></script>
+    <script type="text/javascript" src="https://ohm2013.org/site/wp-includes/js/jquery/ui/jquery.ui.widget.min.js?ver=1.9.2"></script>
+    <script type="text/javascript" src="https://ohm2013.org/site/wp-includes/js/jquery/ui/jquery.ui.effect.min.js?ver=1.9.2"></script>
+    <script type="text/javascript" src="https://ohm2013.org/site/wp-content/themes/montezuma/javascript/smooth-menu.js"></script>
+    <script type="text/javascript" src="https://ohm2013.org/site/wp-content/uploads/montezuma/javascript.js"></script>
+    {% block head %}
+    {% endblock %}
+  </head>
+  <body>
+    {% autoescape false %}
+    {{ menu }}
+    {% endautoescape %}
+
+    {% block content %}{% endblock %}
+  </body>
+</html>

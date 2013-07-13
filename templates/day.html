@@ -37,7 +37,9 @@
 	  {%- for speaker in item.speakers -%}
 	  <a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
 	  {%- endfor %}
+	  <br>
 	  {%- endif %}
+	  {{ item.type }}
 	  {%- endif %}
 	</td>
 	{%- endif %}

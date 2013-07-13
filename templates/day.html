@@ -10,7 +10,7 @@
       </div>
     </div>
 
-    <h1>Day {{ day.number }} - {{ day.date }}</h1>
+    <h1>Day {{ day.number }} - {{ day.date.strftime("%A - %Y-%m-%d") }}</h1>
 
     <table class="schedule">
       <tr>

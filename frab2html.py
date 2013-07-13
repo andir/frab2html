@@ -72,7 +72,7 @@ class Event(object):
             hour, minute = map(int, event_dict['start'].split(':'))
             self.start = time(hour=hour, minute=minute)
             if self.start.minute % 15 != 0:
-                print "Not adding event {} because it does not start on 15 minute boundary".format(self.id)
+                print "Not adding event {0} because it does not start on 15 minute boundary".format(self.id)
                 return
         else:
             self.start = None
@@ -81,13 +81,13 @@ class Event(object):
             hours, minutes = map(int, event_dict['duration'].split(':'))
             self.duration = timedelta(hours=hours, minutes=minutes)
             if self.duration.seconds % (15 * 60) != 0:
-                print "Not adding event {} because duration is not on a 15 minute boundary".format(self.id)
+                print "Not adding event {0} because duration is not on a 15 minute boundary".format(self.id)
                 return
         else:
             self.duration = None
 
         if self.room is not None and self.room not in rooms:
-            print u"Can't find room {}".format(room)
+            print u"Can't find room {0}".format(room)
 
         self.by_id[self.id] = self
         if self.day:
@@ -99,7 +99,7 @@ class Event(object):
             try:
                 speaker = Speaker.get_by_id(int(speaker_dict['id']))
             except KeyError:
-                print u"Speaker {} ({}) not found".format(speaker_dict['full_public_name'], speaker_dict['id'])
+                print u"Speaker {0} ({0}) not found".format(speaker_dict['full_public_name'], speaker_dict['id'])
             else:
                 self.speakers.append(speaker)
                 speaker.events.append(self)

@@ -234,15 +234,14 @@ def export(menu, output_directory):
                 row = [None]
 
             for room in rooms:
-                if room in day_dict[start]:
+                if room in rowspan and rowspan[room] != 0:
+                    rowspan[room] -= 1
+                elif room in day_dict[start]:
                     event = day_dict[start][room]
                     row.append(event)
                     rowspan[room] = event.slots - 1
                 else:
-                    if room in rowspan and rowspan[room] != 0:
-                        rowspan[room] -= 1
-                    else:
-                        row.append(None)
+                    row.append(None)
             schedule.append(row)
 
         with open(os.path.join(output_directory, "day_{0}.html".format(day['number'])), "w") as f:

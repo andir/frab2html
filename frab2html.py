@@ -149,7 +149,13 @@ def parse_events(filename):
         days[number] = {'number': number, 'date': day_date, 'start': None, 'end': None}
         for room, events in day['rooms'].items():
             for event_dict in events:
-                event = Event(event_dict, day['index'], room)
+                # Noisy Square should be put in the schedule later on
+                if room == 'T6: Noisy Square 1' or room == 'Noisy Square 2':
+                    event = Event(event_dict)
+                    continue
+                else:
+                    event = Event(event_dict, day['index'], room)
+
                 if not days[number]['start'] or days[number]['start'] > event.start_datetime:
                     days[number]['start'] = event.start_datetime
 

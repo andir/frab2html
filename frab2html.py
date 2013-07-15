@@ -174,6 +174,9 @@ def fetch_menu():
 
     menu = menu.replace('src="/site/wp-content/themes/montezuma/images/ohm2013-oblong-960px.png"',
                         'src="https://ohm2013.org/site/wp-content/themes/montezuma/images/ohm2013-oblong-960px.png"')
+    menu = menu.replace('href="/wiki', 'href="https://ohm2013.org/wiki')
+    menu = menu.replace('item-program', 'active item-program')
+
     return menu
 
 

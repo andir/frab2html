@@ -72,8 +72,11 @@ class Event(object):
             hour, minute = map(int, event_dict['start'].split(':'))
             self.start = time(hour=hour, minute=minute)
             if self.start.minute % 15 != 0:
-                print "Not adding event {0} because it does not start on 15 minute boundary".format(self.id)
-                return
+                if self.type == 'lightning_talk':
+                    self.room = None
+                else:
+                    print "Not adding event {0} because it does not start on 15 minute boundary".format(self.id)
+                    return
         else:
             self.start = None
 
@@ -81,8 +84,11 @@ class Event(object):
             hours, minutes = map(int, event_dict['duration'].split(':'))
             self.duration = timedelta(hours=hours, minutes=minutes)
             if self.duration.seconds % (15 * 60) != 0:
-                print "Not adding event {0} because duration is not on a 15 minute boundary".format(self.id)
-                return
+                if self.type == 'lightning_talk':
+                    self.room = None
+                else:
+                    print "Not adding event {0} because duration is not on a 15 minute boundary".format(self.id)
+                    return
         else:
             self.duration = None
 

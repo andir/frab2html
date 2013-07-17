@@ -162,6 +162,9 @@ def parse_events(filename):
                 else:
                     event = Event(event_dict, day['index'], room)
 
+                if not event.id in Event.by_id:
+                    continue
+
                 if not days[number]['start'] or days[number]['start'] > event.start_datetime:
                     days[number]['start'] = event.start_datetime
 

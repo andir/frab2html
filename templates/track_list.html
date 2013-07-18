@@ -15,16 +15,11 @@
 
     {% include 'navbar.html' %}
 
-    <h1>Events</h1>
-    {% for type in event_list %}
-    <a href="#{{ type.name }}">{{ type.title }}</a>
-    {% endfor %}
-
-    {% for type in event_list %}
-    <a id="{{ type.name }}"></a>
-    <h3>{{ type.title }}</h3>
+    {% for track in track_list  %}
+    <a id="{{ track.name }}"></a>
+    <h3>{{ track.name }}</h3>
     <table class="schedulelist">
-      {% for event in type.events  %}
+      {% for event in track.events %}
       <tr>
 	<td><a href="event/{{ event.id }}.html">{{ event.title }}</a></td>
 	<td>

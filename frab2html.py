@@ -14,6 +14,8 @@ from jinja2 import Environment, FileSystemLoader, Markup, evalcontextfilter, esc
 # FIXME: Can't get the room rank from the JSON export
 rooms = [u'T1: Orwell Hall', u'T2: Turing Hall', u'T3: Lovelace Tent', u'T4: Lamarr Tent', u'T5: Ockham`s Enclosure', u'T6: Noisy Square 1',
          u'Noisy Square 2', 'Room 101', u'Makerlab', u'Hardware Hacking', u'HOAP', u'Rainbow stage']
+tracks = ['Observe', 'Hack', 'Make', 'Kids', 'Noisy Square']
+types = ['lecture', 'podium', 'demonstration', 'workshop', 'lightning_talk', 'meeting', 'film_screening', 'art_performance', 'art_installation', 'other']
 days = {}
 
 
@@ -42,6 +44,8 @@ class Speaker(object):
 class Event(object):
     by_id = {}
     by_day = defaultdict(list)
+    by_track = defaultdict(list)
+    by_type = defaultdict(list)
 
     @classmethod
     def all_events(cls):
@@ -62,6 +66,7 @@ class Event(object):
         self.description = event_dict['description']
         self.title = event_dict['title']
         self.type = event_dict['type']
+        self.track = event_dict['track']
         self.room = room
 
         self.day = day
@@ -95,7 +100,14 @@ class Event(object):
         if self.room is not None and self.room not in rooms:
             print u"Can't find room {0}".format(room)
 
+        if self.track:
+            if self.track not in tracks:
+                print u"Can't find track {0}".format(self.track)
+            else:
+                self.by_track[self.track].append(self)
+
         self.by_id[self.id] = self
+        self.by_type[self.type].append(self)
         if self.day:
             self.by_day[self.day].append(self)
 
@@ -171,6 +183,12 @@ def parse_events(filename):
                 if not days[number]['end'] or days[number]['end'] < event.end_datetime:
                     days[number]['end'] = event.end_datetime
 
+    for event_list in Event.by_track.values():
+        event_list.sort(cmp=lambda x, y: cmp(x.title.lower(), y.title.lower()))
+
+    for event_list in Event.by_type.values():
+        event_list.sort(cmp=lambda x, y: cmp(x.title.lower(), y.title.lower()))
+
 
 def parse_speakers(filename):
     with open(filename) as f:
@@ -218,10 +236,9 @@ def export(menu, output_directory):
     event_list_template = env.get_template("event_list.html")
     speaker_template = env.get_template("speaker.html")
     speaker_list_template = env.get_template("speaker_list.html")
+    track_list_template = env.get_template("track_list.html")
 
-    event_list = Event.all_events()
-    event_list.sort(cmp=lambda x, y: cmp(x.title.lower(), y.title.lower()))
-    for e in event_list:
+    for e in Event.all_events():
         with open(os.path.join(output_directory, "event/{0}.html".format(e.id)), "w") as f:
             f.write(event_template.render(menu=menu, event=e).encode('utf-8'))
 
@@ -234,8 +251,18 @@ def export(menu, output_directory):
     with open(os.path.join(output_directory, "speakers.html"), "w") as f:
         f.write(speaker_list_template.render(menu=menu, speaker_list=speaker_list).encode('utf-8'))
 
+    type_list = []
+    for type in types:
+        type_list.append({'name': type, 'title': type.replace('_', ' ').capitalize(), 'events': Event.by_type[type]})
     with open(os.path.join(output_directory, "events.html"), "w") as f:
-        f.write(event_list_template.render(menu=menu, event_list=event_list).encode('utf-8'))
+        f.write(event_list_template.render(menu=menu, event_list=type_list).encode('utf-8'))
+
+    track_list = []
+    for track in tracks:
+        track_list.append({'name': track, 'events': Event.by_track[track]})
+
+    with open(os.path.join(output_directory, "tracks.html"), "w") as f:
+        f.write(track_list_template.render(menu=menu, track_list=track_list).encode('utf-8'))
 
     for day in days.values():
         day_dict = Event.get_time_and_room_dict(day['number'])

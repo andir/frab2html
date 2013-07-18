@@ -12,8 +12,8 @@ import requests
 from jinja2 import Environment, FileSystemLoader, Markup, evalcontextfilter, escape
 
 # FIXME: Can't get the room rank from the JSON export
-rooms = [u'T1: Orwell Hall', u'T2: Turing Hall', u'T3: Lovelace Tent', u'T4: Lamarr Tent', u'T5: Ockham`s Arena', u'T6: Noisy Square 1',
-         u'Noisy Square 2', u'Makerlab', u'Hardware Hacking', u'HOAP', u'Rainbow stage']
+rooms = [u'T1: Orwell Hall', u'T2: Turing Hall', u'T3: Lovelace Tent', u'T4: Lamarr Tent', u'T5: Ockham`s Enclosure', u'T6: Noisy Square 1',
+         u'Noisy Square 2', 'Room 101', u'Makerlab', u'Hardware Hacking', u'HOAP', u'Rainbow stage']
 days = {}
 
 

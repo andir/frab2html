@@ -13,7 +13,8 @@ from jinja2 import Environment, FileSystemLoader, Markup, evalcontextfilter, esc
 
 # FIXME: Can't get the room rank from the JSON export
 rooms = [u'T1: Orwell Hall', u'T2: Turing Hall', u'T3: Lovelace Tent', u'T4: Lamarr Tent', u'T5: Ockham`s Enclosure', u'T6: Noisy Square 1',
-         u'Noisy Square 2', 'Room 101', u'Makerlab', u'Hardware Hacking', 'Sparkshed and Mordor', u'HOAP', u'Rainbow stage', u'Child Node']
+         u'Noisy Square 2', 'Room 101', u'Makerlab', u'Hardware Hacking', 'Sparkshed and Mordor', u'HOAP', u'Rainbow stage', u'Child Node',
+         u'Food Hacking Base']
 tracks = ['Observe', 'Hack', 'Make', 'Kids', 'Noisy Square']
 types = ['lecture', 'podium', 'demonstration', 'workshop', 'lightning_talk', 'meeting', 'film_screening', 'art_performance', 'art_installation', 'other']
 days = {}

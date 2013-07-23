@@ -221,6 +221,7 @@ def export(menu, output_directory):
     speaker_template = env.get_template("speaker.html")
     speaker_list_template = env.get_template("speaker_list.html")
     track_list_template = env.get_template("track_list.html")
+    icalxcaljson_template = env.get_template("icalxcaljson.html")
 
     for e in Event.all_events():
         with open(os.path.join(output_directory, "event/{0}.html".format(e.id)), "w") as f:
@@ -275,6 +276,9 @@ def export(menu, output_directory):
 
         with open(os.path.join(output_directory, "day_{0}.html".format(day['number'])), "w") as f:
             f.write(day_template.render(menu=menu, day=day, schedule=schedule, rooms=rooms).encode('utf-8'))
+
+    with open(os.path.join(output_directory, "icalxcaljson.html"), "w") as f:
+        f.write(icalxcaljson_template.render(menu=menu, icalxcaljson=True).encode('utf-8'))
 
     shutil.copy("schedule.css", os.path.join(output_directory, "schedule.css"))
     shutil.copy(os.path.join(output_directory, "day_1.html"), os.path.join(output_directory, "index.html"))

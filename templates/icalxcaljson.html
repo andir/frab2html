@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div id="main" class="row">
+  <div id="content" class="col12 hentry">
+
+    {% include 'navbar.html' %}
+
+    <h1>iCal, xCal and JSON</h1>
+
+    <ul>
+      <li><a href="schedule.ics">schedule.ics</a></li>
+      <li><a href="schedule.xcal">schedule.xcal</a></li>
+      <li><a href="schedule.json">schedule.json</a></li>
+      <li><a href="speakers.json">speakers.json</a></li>
+    </ul>
+  </div>
+</div>
+
+{% endblock %}

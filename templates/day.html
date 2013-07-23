@@ -40,7 +40,7 @@
 	  <br>
 	  {%- endif %}
 	  {%- if item.track %}
-	  <a href="tracks.html#{{ item.track }}"><abbr title="{{ item.track }} track">{{item.track.0 }}</abbr></a>
+	  <a href="tracks.html#{{ item.track.replace(" ", "%20") }}"><abbr title="{{ item.track }} track">{{item.track.0 }}</abbr></a>
 	  {%- endif %}
 	  {{ item.type }}
 	  {%- endif %}

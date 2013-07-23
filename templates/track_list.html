@@ -16,7 +16,7 @@
     {% include 'navbar.html' %}
 
     {% for track in track_list  %}
-    <a id="{{ track.name }}"></a>
+    <a id="{{ track.name.replace(" ", "%20") }}"></a>
     <h3>{{ track.name }}</h3>
     <table class="schedulelist">
       {% for event in track.events %}

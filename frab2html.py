@@ -145,19 +145,7 @@ class Event(object):
 
 def parse_events(filename):
     with open(filename) as f:
-        schedulejson = f.read()
-
-    # Fix broken JSON from frab
-    schedulejson = schedulejson.replace('days', 'num_days', 1)
-    schedulejson = schedulejson.replace('\r\n', '\\n')
-    schedulejson = schedulejson.replace('\t', ' ')
-    schedulejson = schedulejson.replace('&#x27;', "'")
-    schedulejson = schedulejson.replace('&amp;', "&")
-    schedulejson = schedulejson.replace('&quot;', '\\"')
-    schedulejson = re.sub(r',\s+"links":([^\]]|[^\s]])+\s]', "", schedulejson)
-    schedulejson = re.sub(r'\},\s*\]', "}]", schedulejson)
-
-    schedule = json.loads(schedulejson)
+        schedule = json.load(f)
 
     for e in schedule['schedule']['conference']['unscheduled']:
         Event(e)

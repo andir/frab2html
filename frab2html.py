@@ -284,11 +284,11 @@ def export(menu, output_directory):
     shutil.copy(os.path.join(output_directory, "day_1.html"), os.path.join(output_directory, "index.html"))
 
 if __name__ == "__main__":
-    if len(sys.argv) != 6:
-        print "Usage: {0} schedule.json speakers.json schedule.xcal schedule.ics output_directory".format(sys.argv[0])
+    if len(sys.argv) != 7:
+        print "Usage: {0} schedule.json speakers.json schedule.xcal schedule.ics schedule.xml output_directory".format(sys.argv[0])
         sys.exit(1)
 
-    output_directory = sys.argv[5]
+    output_directory = sys.argv[6]
 
     makedirs([os.path.join(output_directory, "event"),
               os.path.join(output_directory, "speaker")])
@@ -299,4 +299,5 @@ if __name__ == "__main__":
     shutil.copy(sys.argv[2], os.path.join(output_directory, "speakers.json"))
     shutil.copy(sys.argv[3], os.path.join(output_directory, "schedule.xcal"))
     shutil.copy(sys.argv[4], os.path.join(output_directory, "schedule.ics"))
+    shutil.copy(sys.argv[5], os.path.join(output_directory, "schedule.xml"))
     export(menu, output_directory)

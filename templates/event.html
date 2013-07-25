@@ -3,22 +3,39 @@
 {% block content %}
 
 <div id="main" class="row">
-  <div id="content" class="col12 hentry">
+  <div class="col12">
+  {% include 'navbar.html' %}
+  </div>
+  <div id="content" class="col8 hentry">
 
-    {% include 'navbar.html' %}
+    <h1>{{ event.title }}</h1>
 
-<h1>{{ event.title }}</h1>
+    <p>
+      By {%- for speaker in event.speakers %}
+      <a href="../speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
+      {%- endfor %}
+    </p>
 
-<p>
-  By {%- for speaker in event.speakers %}
-  <a href="../speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
-  {%- endfor %}
-</p>
+    {{ event.abstract|nl2br }}
 
-{{ event['abstract']|nl2br }}
-
-{{ event['description']|nl2br }}
-      </div>
-    </div>
+    {{ event.description|nl2br }}
+  </div>
+  <div class="col4">
+    <h6>Day</h6>
+    {{ event.day }}
+    <h6>Start time</h6>
+    {{ event.start|format_time }}
+    <h6>Duration</h6>
+    {{ event.duration|format_time }}
+    <h6>Location</h6>
+    {{ event.room }}
+    <h6>Type</h6>
+    {{ event.type|capitalize }}
+    {% if event.track %}
+    <h6>Track</h6>
+    {{ event.track }}
+    {% endif %}
+  </div>
+</div>
 
 {% endblock %}

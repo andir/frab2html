@@ -212,9 +212,14 @@ def nl2br(eval_ctx, value):
     return result
 
 
+def format_time(t):
+    return ':'.join(str(t).split(':')[:2])
+
+
 def export(menu, output_directory):
     env = Environment(loader=FileSystemLoader('templates'), extensions=['jinja2.ext.autoescape'], autoescape=True)
     env.filters['nl2br'] = nl2br
+    env.filters['format_time'] = format_time
     day_template = env.get_template("day.html")
     event_template = env.get_template("event.html")
     event_list_template = env.get_template("event_list.html")

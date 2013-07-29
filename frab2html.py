@@ -68,6 +68,7 @@ class Event(object):
         self.title = event_dict['title']
         self.type = event_dict['type']
         self.track = event_dict['track']
+        self.links = event_dict['links']
         self.room = room
 
         self.day = day

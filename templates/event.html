@@ -19,6 +19,15 @@
     {{ event.abstract|nl2br }}
 
     {{ event.description|nl2br }}
+
+    {% if event.links %}
+    <h4>Links</h4>
+    <ul>
+    {% for link in event.links %}
+    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {% endfor %}
+    </ul>
+    {% endif %}
   </div>
   <div class="col4">
     <h6>Day</h6>

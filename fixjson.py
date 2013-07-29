@@ -15,7 +15,7 @@ def fix_json(schedulejson):
     schedulejson = schedulejson.replace('&quot;', '\\"')
     schedulejson = schedulejson.replace('&lt;', '<')
     schedulejson = schedulejson.replace('&gt;', '>')
-    schedulejson = re.sub(r',\s+"links":([^\]]|[^\s]])+\s]', "", schedulejson)
+    schedulejson = re.sub(r'}\s+{"url"', '}, {"url"', schedulejson)
     schedulejson = re.sub(r'\},\s*\]', "}]", schedulejson)
 
     return schedulejson

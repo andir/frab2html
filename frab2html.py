@@ -86,7 +86,7 @@ class Event(object):
         if event_dict['start']:
             hour, minute = map(int, event_dict['start'].split(':'))
             if hour < 10:
-                hour += 14
+                hour += 16
             self.start = time(hour=hour, minute=minute)
             if self.start.minute % 15 != 0:
                 if self.type == 'lightning_talk':

@@ -2,61 +2,73 @@
 
 {% block content %}
 <div id="main">
-  <div id="content">
+    <div id="content">
 
-    <div class="row">
-      <div class="col12">
-	{% include 'navbar.html' %}
-      </div>
+        <div class="row">
+            <div class="col12">
+                {% include 'navbar.html' %}
+            </div>
+        </div>
+
+        <h1>Day {{ day.number }} - {{ day.date.strftime("%A - %Y-%m-%d") }}</h1>
+
+        <div class="pager">
+            {%- for schedule in schedules %}
+            <div><a href="#part{{ loop.index }}">Part {{ loop.index }}</a></div>
+            {%- endfor %}
+        </div>
+        <br class="clear"/>
+
+        {%- for schedule in schedules %}
+        <a name="part{{ loop.index }}"></a>
+        <table class="schedule">
+            <tr>
+                <th></th>
+                {%- for room in rooms[loop.index-1] %}
+                <th class="room">{{ room }}</th>
+                {%- endfor %}
+            </tr>
+            {%- for row in schedule %}
+            <tr>
+                {%- for item in row %}
+                {%- if loop.first %}
+                {%- if item %}
+                <th class="time">{{ item }}</th>
+                {%- else %}
+                <th></th>
+                {%- endif %}
+                {%- else %}
+                <td
+                {% if item %} rowspan="{{ item.slots }}" class="event"{% endif %}>
+                {% if item %}
+                <a href="event/{{ item.id }}.html">{{ item.title }}</a><br>
+                {% if item.speakers %}
+                by&nbsp;
+                {%- for speaker in item.speakers -%}
+                <a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
+                {%- endfor %}
+                <br>
+                {%- endif %}
+                {%- if item.track %}
+                <a href="tracks.html#{{ item.track.replace(" ", "%20") }}"><abbr title="{{ item.track }} track">{{item.track.0
+                }}</abbr></a>
+                {%- endif %}
+                {{ item.type }}
+                {%- endif %}
+                </td>
+                {%- endif %}
+                {%- endfor %}
+            </tr>
+            {%- endfor %}
+            <tr>
+                <th></th>
+                {%- for room in rooms[loop.index-1] %}
+                <th class="room">{{ room }}</th>
+                {%- endfor %}
+            </tr>
+        </table>
+        {%- endfor %}
     </div>
-
-    <h1>Day {{ day.number }} - {{ day.date.strftime("%A - %Y-%m-%d") }}</h1>
-
-    <table class="schedule">
-      <tr>
-	<th></th>
-	{%- for room in rooms %}
-	<th class="room">{{ room }}</th>
-	{%- endfor %}
-      </tr>
-      {%- for row in schedule %}
-      <tr>
-	{%- for item in row %}
-	{%- if loop.first %}
-	{%- if item %}
-	<th class="time">{{ item }}</th>
-	{%- else %}
-	<th></th>
-	{%- endif %}
-	{%- else %}
-	<td{% if item %} rowspan="{{ item.slots }}" class="event"{% endif %}>
-	  {% if item %}
-	  <a href="event/{{ item.id }}.html">{{ item.title }}</a><br>
-	  {% if item.speakers %}
-	  by&nbsp;
-	  {%- for speaker in item.speakers -%}
-	  <a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
-	  {%- endfor %}
-	  <br>
-	  {%- endif %}
-	  {%- if item.track %}
-	  <a href="tracks.html#{{ item.track.replace(" ", "%20") }}"><abbr title="{{ item.track }} track">{{item.track.0 }}</abbr></a>
-	  {%- endif %}
-	  {{ item.type }}
-	  {%- endif %}
-	</td>
-	{%- endif %}
-	{%- endfor %}
-      </tr>
-      {%- endfor %}
-      <tr>
-	<th></th>
-	{%- for room in rooms %}
-	<th class="room">{{ room }}</th>
-	{%- endfor %}
-      </tr>
-    </table>
-  </div>
 </div>
 
 {% endblock %}

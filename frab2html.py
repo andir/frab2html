@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import json
 import re
 import os
 import shutil
@@ -8,15 +7,20 @@ import sys
 from collections import defaultdict
 from datetime import time, timedelta, datetime
 
+import json
 import requests
 from jinja2 import Environment, FileSystemLoader, Markup, evalcontextfilter, escape
 
+
 # FIXME: Can't get the room rank from the JSON export
-rooms = [u'T1: Orwell Hall', u'T2: Turing Hall', u'T3: Lovelace Tent', u'T4: Lamarr Tent', u'T5: Ockham`s Enclosure', u'T6: Noisy Square 1',
-         u'Noisy Square 2', 'Room 101', u'Makerlab', u'Hardware Hacking', u'Sparkshed and Mordor', u'HOAP', u'Rainbow stage', u'Child Node',
-         u'Food Hacking Base', u'Fablab Alkmaar']
+rooms = [[u'T1: Orwell Hall', u'T2: Turing Hall', u'T3: Lovelace Tent', u'T4: Lamarr Tent', u'T5: Ockham`s Enclosure',
+          u'T6: Noisy Square 1', u'Noisy Square 2', u'Room 101', u'HOAP', u'Rainbow stage', u'OHMroep'],
+         [u'Hardware Hacking', u'Makerlab', u'Sparkshed and Mordor', u'Child Node', u'Food Hacking Base',
+          u'Fablab Alkmaar', u'Area42', u'Garrison', u'ebCTF']]
+flatrooms = [item for sublist in rooms for item in sublist]
 tracks = ['Observe', 'Hack', 'Make', 'Kids', 'Noisy Square']
-types = ['lecture', 'podium', 'demonstration', 'workshop', 'lightning_talk', 'meeting', 'film_screening', 'art_performance', 'art_installation', 'other']
+types = ['lecture', 'podium', 'demonstration', 'workshop', 'lightning_talk', 'meeting', 'film_screening',
+         'art_performance', 'art_installation', 'other']
 days = {}
 
 
@@ -99,7 +103,7 @@ class Event(object):
         else:
             self.duration = None
 
-        if self.room is not None and self.room not in rooms:
+        if self.room is not None and self.room not in flatrooms:
             print u"Can't find room {0}".format(room)
 
         if self.track:
@@ -201,6 +205,7 @@ def makedirs(directories):
             if e.errno != 17:
                 raise
 
+
 _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
 
@@ -256,32 +261,36 @@ def export(menu, output_directory):
         f.write(track_list_template.render(menu=menu, track_list=track_list).encode('utf-8'))
 
     for day in days.values():
-        day_dict = Event.get_time_and_room_dict(day['number'])
-        start_times = day_dict.keys()
-        start_times.sort()
-        schedule = []
-        rowspan = {}
+        schedules = []
+        for subrooms in rooms:
+            day_dict = Event.get_time_and_room_dict(day['number'])
+            start_times = day_dict.keys()
+            start_times.sort()
+            schedule = []
+            rowspan = {}
 
-        for i in range((day['end'] - day['start']).seconds / (15 * 60)):
-            start = day['start'] + timedelta(minutes=15 * i)
-            if i == 0 or start.minute == 0 or start.minute == 30:
-                row = [start.strftime("%H:%M")]
-            else:
-                row = [None]
-
-            for room in rooms:
-                if room in rowspan and rowspan[room] != 0:
-                    rowspan[room] -= 1
-                elif room in day_dict[start]:
-                    event = day_dict[start][room]
-                    row.append(event)
-                    rowspan[room] = event.slots - 1
+            for i in range((day['end'] - day['start']).seconds / (15 * 60)):
+                start = day['start'] + timedelta(minutes=15 * i)
+                if i == 0 or start.minute == 0 or start.minute == 30:
+                    row = [start.strftime("%H:%M")]
                 else:
-                    row.append(None)
-            schedule.append(row)
+                    row = [None]
+
+                for room in subrooms:
+                    if room in rowspan and rowspan[room] != 0:
+                        rowspan[room] -= 1
+                    elif room in day_dict[start]:
+                        event = day_dict[start][room]
+                        row.append(event)
+                        rowspan[room] = event.slots - 1
+                    else:
+                        row.append(None)
+                schedule.append(row)
+
+            schedules.append(schedule)
 
         with open(os.path.join(output_directory, "day_{0}.html".format(day['number'])), "w") as f:
-            f.write(day_template.render(menu=menu, day=day, schedule=schedule, rooms=rooms).encode('utf-8'))
+            f.write(day_template.render(menu=menu, day=day, schedules=schedules, rooms=rooms).encode('utf-8'))
 
     with open(os.path.join(output_directory, "icalxcaljson.html"), "w") as f:
         f.write(icalxcaljson_template.render(menu=menu, icalxcaljson=True).encode('utf-8'))
@@ -289,9 +298,11 @@ def export(menu, output_directory):
     shutil.copy("schedule.css", os.path.join(output_directory, "schedule.css"))
     shutil.copy(os.path.join(output_directory, "day_1.html"), os.path.join(output_directory, "index.html"))
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 7:
-        print "Usage: {0} schedule.json speakers.json schedule.xcal schedule.ics schedule.xml output_directory".format(sys.argv[0])
+        print "Usage: {0} schedule.json speakers.json schedule.xcal schedule.ics schedule.xml output_directory".format(
+            sys.argv[0])
         sys.exit(1)
 
     output_directory = sys.argv[6]

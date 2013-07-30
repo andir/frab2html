@@ -2,8 +2,8 @@
 
 {% block head %}
 <script type="text/javascript">
-    jQuery(document).ready(function($) {
-    $('.schedulelist tr:nth-child(even)').addClass('alternate');
+    jQuery(document).ready(function ($) {
+        $('.schedulelist tr:nth-child(even)').addClass('alternate');
     })
 </script>
 {% endblock %}
@@ -11,35 +11,52 @@
 {% block content %}
 
 <div id="main" class="row">
-  <div id="content" class="col12">
+    <div id="content" class="col12">
 
-    {% include 'navbar.html' %}
+        {% include 'navbar.html' %}
 
-    <h1>Events</h1>
-    {% for type in event_list %}
-    <a href="#{{ type.name }}">{{ type.title }}</a>
-    {% endfor %}
+        <h1>Events</h1>
 
-    {% for type in event_list %}
-    <a id="{{ type.name }}"></a>
-    <h3>{{ type.title }}</h3>
-    <table class="schedulelist">
-      {% for event in type.events  %}
-      <tr>
-	<td><a href="event/{{ event.id }}.html">{{ event.title }}</a></td>
-	<td>
-	  {%- for speaker in event.speakers %}
-	  <p><a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a></p>
-	  {%- endfor %}
-	</td>
-	<td>
-	  {{ event.abstract|nl2br }}
-	</td>
-      </tr>
-      {% endfor %}
-    </table>
-    {% endfor %}
+        <div class="pager">
+        {% for type in event_list %}
+        <div><a href="#{{ type.name }}">{{ type.title }}</a></div>
+        {% endfor %}
+        </div>
+        <br class="clear"/>
 
-  </div>
+        {% for type in event_list %}
+        <a id="{{ type.name }}"></a>
+
+        <h3>{{ type.title }}</h3>
+        <table class="schedulelist">
+            <thead>
+            <tr>
+                <th>Time</th>
+                <th>Title</th>
+                <th>Speaker</th>
+                <th>Abstract</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for event in type.events %}
+            <tr>
+                <td>Day {{ event.day }}, {{ event.start.strftime("%H:%M") }}</td>
+                <td><a href="event/{{ event.id }}.html">{{ event.title }}</a></td>
+                <td>
+                    {%- for speaker in event.speakers %}
+                    <p><a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a></p>
+                    {%- endfor %}
+                </td>
+                <td>
+                    {{ event.abstract|nl2br }}
+                </td>
+            </tr>
+            {% endfor %}
+
+            </tbody>
+        </table>
+        {% endfor %}
+
+    </div>
 </div>
 {% endblock %}

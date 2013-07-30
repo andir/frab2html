@@ -249,7 +249,7 @@ def export(menu, output_directory):
             startB = datetime.combine(days[ce.day]['start'], ce.start)
             endA = startA + e.duration
             endB = startB + ce.duration
-            if (startA <= endB) and (endA >= startB):
+            if (startA < endB) and (endA > startB):
                 concurrent_events.append(ce)
         concurrent_events.sort(cmp=lambda x, y: cmp(x.title.lower(), y.title.lower()))
 

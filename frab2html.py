@@ -78,7 +78,7 @@ class Event(object):
 
         self.day = day
         if self.day is None:
-            print "Not adding event {0} because it does not have a day".format(self.id)
+            #print "Not adding event {0} because it does not have a day".format(self.id)
             return
         else:
             self.day = int(self.day) + 1

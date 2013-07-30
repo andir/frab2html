@@ -3,20 +3,24 @@
 {% block content %}
 
 <div id="main" class="row">
-  <div id="content" class="col12 hentry">
+    <div id="content">
 
-    {% include 'navbar.html' %}
+        <div class="row">
+            <div class="col12">
+                {% include 'navbar.html' %}
+            </div>
+        </div>
 
-    <h1>iCal, xCal, JSON and XML</h1>
+        <h1>iCal, xCal, JSON and XML</h1>
 
-    <ul>
-      <li><a href="schedule.ics">schedule.ics</a></li>
-      <li><a href="schedule.xcal">schedule.xcal</a></li>
-      <li><a href="schedule.json">schedule.json</a></li>
-      <li><a href="speakers.json">speakers.json</a></li>
-      <li><a href="schedule.xml">schedule.xml</a></li>
-    </ul>
-  </div>
+        <ul>
+            <li><a href="schedule.ics">schedule.ics</a></li>
+            <li><a href="schedule.xcal">schedule.xcal</a></li>
+            <li><a href="schedule.json">schedule.json</a></li>
+            <li><a href="speakers.json">speakers.json</a></li>
+            <li><a href="schedule.xml">schedule.xml</a></li>
+        </ul>
+    </div>
 </div>
 
 {% endblock %}

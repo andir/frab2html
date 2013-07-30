@@ -301,7 +301,6 @@ def export(menu, output_directory):
                     if room in rowspan and rowspan[room] != 0:
                         rowspan[room] -= 1
                     elif len(lightning_talks) > 0:
-                        print "Lightning talks in " + room  + " at " + start.strftime("%d %b %H:%M")
                         rowspan[room] = 4
                         item = {}
                         item['lightning'] = True

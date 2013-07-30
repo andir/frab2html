@@ -51,6 +51,7 @@ class Event(object):
     by_day = defaultdict(list)
     by_track = defaultdict(list)
     by_type = defaultdict(list)
+    lightning = defaultdict(list)
 
     @classmethod
     def all_events(cls):
@@ -86,7 +87,9 @@ class Event(object):
             self.start = time(hour=hour, minute=minute)
             if self.start.minute % 15 != 0:
                 if self.type == 'lightning_talk':
-                    self.room = None
+                    if not room in self.lightning:
+                        self.lightning[room] = defaultdict(list)
+                    self.lightning[room][self.day * 100 + hour].append(self)
                 else:
                     print "Not adding event {0} because it does not start on 15 minute boundary".format(self.id)
                     return
@@ -279,8 +282,18 @@ def export(menu, output_directory):
                     row = [None]
 
                 for room in subrooms:
+                    lightning_talks = []
+                    if room in Event.lightning:
+                        lightning_talks = Event.lightning[room][day['number'] * 100 + start.hour]
                     if room in rowspan and rowspan[room] != 0:
                         rowspan[room] -= 1
+                    elif len(lightning_talks) > 0:
+                        print "Lightning talks in " + room  + " at " + start.strftime("%d %b %H:%M")
+                        rowspan[room] = 4
+                        item = {}
+                        item['lightning'] = True
+                        item['talks'] = lightning_talks
+                        row.append(item)
                     elif room in day_dict[start]:
                         event = day_dict[start][room]
                         row.append(event)

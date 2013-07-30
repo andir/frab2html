@@ -38,24 +38,36 @@
                 <th></th>
                 {%- endif %}
                 {%- else %}
-                <td
-                {% if item %} rowspan="{{ item.slots }}" class="event"{% endif %}>
-                {% if item %}
-                <a href="event/{{ item.id }}.html">{{ item.title }}</a><br>
-                {% if item.speakers %}
-                by&nbsp;
-                {%- for speaker in item.speakers -%}
-                <a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
-                {%- endfor %}
-                <br>
-                {%- endif %}
-                {%- if item.track %}
-                <a href="tracks.html#{{ item.track.replace(" ", "%20") }}"><abbr title="{{ item.track }} track">{{item.track.0
-                }}</abbr></a>
-                {%- endif %}
-                {{ item.type }}
-                {%- endif %}
-                </td>
+                    {%- if item and item is mapping and 'lightning' in item %}
+                    <td rowspan="4" class="event lightning">
+                        <ul>
+                        {%- for talk in item['talks'] -%}
+                            <li> {{ talk.start.strftime("%H:%M") }}
+                                <a href="event/{{ item.id }}.html">{{ talk.title }}</a>
+                        {%- endfor %}
+                        </ul>
+                        <small>lightning talks</small>
+                    </td>
+                    {%- else %}
+                    <td{% if item %} rowspan="{{ item.slots }}" class="event"{% endif %}>
+                        {% if item %}
+                        <a href="event/{{ item.id }}.html">{{ item.title }}</a><br>
+                        {% if item.speakers %}
+                        by&nbsp;
+                        {%- for speaker in item.speakers -%}
+                        <a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a>{% if not loop.last %}, {% endif %}
+                        {%- endfor %}
+                        <br>
+                        {%- endif %}
+                        {%- if item.track %}
+                        <a href="tracks.html#{{ item.track.replace(' ', '%20') }}">
+                            <abbr title="{{ item.track }} track">{{item.track.0 }}</abbr>
+                        </a>
+                        {%- endif %}
+                        <small>{{ item.type }}</small>
+                        {%- endif %}
+                    </td>
+                    {%- endif %}
                 {%- endif %}
                 {%- endfor %}
             </tr>

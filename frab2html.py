@@ -16,7 +16,7 @@ from jinja2 import Environment, FileSystemLoader, Markup, evalcontextfilter, esc
 rooms = [[u'T1: Orwell Hall', u'T2: Turing Hall', u'T3: Lovelace Tent', u'T4: Lamarr Tent', u'T5: Ockham`s Enclosure',
           u'T6: Noisy Square 1', u'Noisy Square 2', u'Room 101', u'HOAP', u'Rainbow stage', u'OHMroep'],
          [u'Hardware Hacking', u'Makerlab', u'Sparkshed and Mordor', u'Child Node', u'Food Hacking Base',
-          u'Fablab Alkmaar', u'Area42', u'Garrison', u'ebCTF']]
+          u'Fablab Alkmaar', u'Area42 Lectures', u'Area42 Workshops', u'Garrison', u'ebCTF']]
 flatrooms = [item for sublist in rooms for item in sublist]
 tracks = ['Observe', 'Hack', 'Make', 'Kids', 'Noisy Square']
 types = ['lecture', 'podium', 'demonstration', 'workshop', 'lightning_talk', 'meeting', 'film_screening',

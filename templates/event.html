@@ -28,6 +28,15 @@
     {% endfor %}
     </ul>
     {% endif %}
+    {%- if concurrent_events|length > 0 -%}
+    <h4>Concurrent events</h4>
+    <ul>
+        {%- for event in concurrent_events -%}
+        <li> <a href="{{ event.id }}.html">{{ event.title }}</a>
+            in {{ event.room }} at {{ event.start.strftime("%H:%M") }}
+            {%- endfor %}
+    </ul>
+    {%- endif -%}
   </div>
   <div class="col4">
     <h6>Day</h6>

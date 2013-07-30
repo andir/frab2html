@@ -77,7 +77,10 @@ class Event(object):
         self.room = room
 
         self.day = day
-        if self.day is not None:
+        if self.day is None:
+            print "Not adding event {0} because it does not have a day".format(self.id)
+            return
+        else:
             self.day = int(self.day) + 1
 
         if event_dict['start']:
@@ -240,8 +243,18 @@ def export(menu, output_directory):
     icalxcaljson_template = env.get_template("icalxcaljson.html")
 
     for e in Event.all_events():
+        concurrent_events = []
+        for ce in Event.all_events():
+            startA = datetime.combine(days[e.day]['start'], e.start)
+            startB = datetime.combine(days[ce.day]['start'], ce.start)
+            endA = startA + e.duration
+            endB = startB + ce.duration
+            if (startA <= endB) and (endA >= startB):
+                concurrent_events.append(ce)
+        concurrent_events.sort(cmp=lambda x, y: cmp(x.title.lower(), y.title.lower()))
+
         with open(os.path.join(output_directory, "event/{0}.html".format(e.id)), "w") as f:
-            f.write(event_template.render(menu=menu, event=e).encode('utf-8'))
+            f.write(event_template.render(menu=menu, event=e, concurrent_events=concurrent_events).encode('utf-8'))
 
     speaker_list = Speaker.all_speakers()
     speaker_list.sort(cmp=lambda x, y: cmp(x.name.lower(), y.name.lower()))

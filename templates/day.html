@@ -43,7 +43,7 @@
                         <ul>
                         {%- for talk in item['talks'] -%}
                             <li> {{ talk.start.strftime("%H:%M") }}
-                                <a href="event/{{ item.id }}.html">{{ talk.title }}</a>
+                                <a href="event/{{ talk.id }}.html">{{ talk.title }}</a>
                         {%- endfor %}
                         </ul>
                         <small>lightning talks</small>

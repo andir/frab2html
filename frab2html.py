@@ -90,14 +90,13 @@ class Event(object):
             if hour >= 24:
                 hour -= 24
             self.start = time(hour=hour, minute=minute)
-            if self.start.minute % 15 != 0:
-                if self.type == 'lightning_talk':
-                    if not room in self.lightning:
-                        self.lightning[room] = defaultdict(list)
-                    self.lightning[room][self.day * 100 + hour].append(self)
-                else:
-                    print "Not adding event {0} because it does not start on 15 minute boundary".format(self.id)
-                    return
+            if self.type == 'lightning_talk':
+                if not room in self.lightning:
+                    self.lightning[room] = defaultdict(list)
+                self.lightning[room][self.day * 100 + hour].append(self)
+            elif self.start.minute % 15 != 0:
+                print "Not adding event {0} because it does not start on 15 minute boundary".format(self.id)
+                return
         else:
             self.start = None
 
@@ -306,7 +305,7 @@ def export(menu, output_directory):
                     if room in rowspan and rowspan[room] != 0:
                         rowspan[room] -= 1
                     elif len(lightning_talks) > 0:
-                        rowspan[room] = 4
+                        rowspan[room] = 3
                         item = {}
                         item['lightning'] = True
                         item['talks'] = lightning_talks

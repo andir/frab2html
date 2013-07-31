@@ -87,6 +87,8 @@ class Event(object):
             hour, minute = map(int, event_dict['start'].split(':'))
             if hour < 10:
                 hour += 16
+            if hour >= 24:
+                hour -= 24
             self.start = time(hour=hour, minute=minute)
             if self.start.minute % 15 != 0:
                 if self.type == 'lightning_talk':
@@ -148,8 +150,11 @@ class Event(object):
 
     @property
     def start_datetime(self):
-        if self.start:
-            return datetime.combine(days[self.day]['date'], self.start)
+        if self.start is not None:
+            if self.start < time(hour=10):
+                return datetime.combine(days[self.day]['date'], self.start) + timedelta(hours=24)
+            else:
+                return datetime.combine(days[self.day]['date'], self.start)
 
     @property
     def end_datetime(self):

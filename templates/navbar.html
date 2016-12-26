@@ -1,42 +1,11 @@
-<nav class="multinav" id="multinav1">
-  {% if day and day.number == 1 %}
-  <span class="current">Day 1</span>
-  {% else %}
-  <a href="/day_1.html">Day 1</a>
-  {% endif %}
-  {% if day and day.number == 2 %}
-  <span class="current">Day 2</span>
-  {% else %}
-  <a href="/day_2.html">Day 2</a>
-  {% endif %}
-  {% if day and day.number == 3 %}
-  <span class="current">Day 3</span>
-  {% else %}
-  <a href="/day_3.html">Day 3</a>
-  {% endif %}
-  {% if day and day.number == 4 %}
-  <span class="current">Day 4</span>
-  {% else %}
-  <a href="/day_4.html">Day 4</a>
-  {% endif %}
-  {% if event_list %}
-  <span class="current">Events</span>
-  {% else %}
-  <a href="/events.html">Events</a>
-  {% endif %}
-  {% if speaker_list %}
-  <span class="current">Speakers</span>
-  {% else %}
-  <a href="/speakers.html">Speakers</a>
-  {% endif %}
-  {% if track_list %}
-  <span class="current">Tracks</span>
-  {% else %}
-  <a href="/tracks.html">Tracks</a>
-  {% endif %}
-  {% if icalxcaljson %}
-  <span class="current">iCal/xCal/JSON/XML</span>
-  {% else %}
-  <a href="/icalxcaljson.html">iCal/xCal/JSON/XML</a>
-  {% endif %}
-</nav>
+<div id="navigation">
+<ul>
+  {% for n in range(1, 5) %}
+  <li {% if day and day.number == n %}class="selected"{% endif %}><a href="/day_{{ n }}.html">Day {{ n }}</a></li>
+  {% endfor %}
+  <li {% if event_list %}class="current"{% endif %}> <a href="/events.html">Events</a></li>
+  <li {% if speaker_list %}class="current"{% endif %}><a href="/speakers.html">Speakers</a></li>
+  <li {% if track_list %}class="current"{% endif %}><a href="/tracks.html">Tracks</a></li>
+  <li {% if icalxcaljson  %}class="current"{% endif %}><a href="/icalxcaljson.html">iCal/xCal/JSON/XML</a></li>
+</ul>
+</div>

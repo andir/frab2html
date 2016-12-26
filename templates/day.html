@@ -1,9 +1,6 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div id="main">
-    <div id="content">
-
         <h1>Day {{ day.number }} - {{ day.date.strftime("%A - %Y-%m-%d") }}</h1>
 
         <div class="pager">
@@ -82,7 +79,4 @@
             </tr>
         </table>
         {%- endfor %}
-    </div>
-</div>
-
 {% endblock %}

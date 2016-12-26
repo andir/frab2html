@@ -47,6 +47,10 @@
     list-style: none;
 }
 
+#main-content {
+    overflow: scroll;
+}
+
 div.event.self-organized-sessions {
     background-color: #b2ecbd;
     border-color: #47ecab;

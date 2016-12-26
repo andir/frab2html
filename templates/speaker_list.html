@@ -1,35 +1,39 @@
 {% extends "base.html" %}
 
-{% block head %}
-<script type="text/javascript">
-    jQuery(document).ready(function($) {
-    $('.schedulelist tr:nth-child(even)').addClass('alternate');
-    })
-</script>
-{% endblock %}
-
 {% block content %}
 
 <div id="main" class="row">
   <div id="content" class="col12">
     <h1>Speakers</h1>
 
-    <table class="schedulelist">
+    <table class="list">
       {% for speaker in speaker_list %}
       <tr>
+        <td>
+        {%- if speaker.picture %}
+        <a href="speaker/{{ speaker.id }}.html">
+                <div class="image small">
+                        <img src="https://fahrplan.events.ccc.de/congress/2016/Fahrplan{{ speaker.picture | replace('/large/', '/small/') }}">
+                </div>
+        </a>
+        {%- endif %}
+        </td>
 	<td><a href="speaker/{{ speaker.id }}.html">{{ speaker.name }}</a></td>
 	<td>
+          <ul>
 	  {%- for event in speaker.events %}
-	  <p><a href="event/{{ event.id }}.html">{{ event.title }}</a></p>
+	  <li><a href="event/{{ event.id }}.html">{{ event.title }}</a></li>
 	  {%- endfor %}
+          </ul>
 	</td>
 	<td>
+          {%- if speaker.abstract %}
 	  {{ speaker.abstract|nl2br }}
+          {%- endif %}
 	</td>
       </tr>
       {% endfor %}
     </table>
-
   </div>
 </div>
 {% endblock %}

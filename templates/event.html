@@ -24,7 +24,11 @@
     <h4>Links</h4>
     <ul>
     {% for link in event.links %}
-    <li><a href="{{ link.url }}">{{ link['title'] }}</a></li>
+    {% if link.url %}
+    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+    {% else %}
+    <li><a href="{{ link }}">{{ link }}</a></li>
+    {% endif %}
     {% endfor %}
     </ul>
     {% endif %}

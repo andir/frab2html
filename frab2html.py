@@ -125,9 +125,6 @@ class Event(object):
                 if not room in self.lightning:
                     self.lightning[room] = defaultdict(list)
                 self.lightning[room][self.day * 100 + hour].append(self)
-#            elif self.start.minute % 15 != 0:
-#                print ("Not adding event {0} because it does not start on 15 minute boundary".format(self.id))
-#                return
         else:
             self.start = None
 
@@ -137,9 +134,6 @@ class Event(object):
             if self.duration.seconds % (15 * 60) != 0:
                 if self.type == 'lightning_talk':
                     self.room = None
-                else:
-                    print ("Not adding event {0} because duration is not on a 15 minute boundary".format(self.id))
-                    return
         else:
             self.duration = None
 

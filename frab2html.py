@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import hashlib
+from dateutil import parser
 import re
 import os
 import shutil
@@ -13,15 +15,44 @@ from jinja2 import Environment, FileSystemLoader, Markup, evalcontextfilter, esc
 
 
 # FIXME: Can't get the room rank from the JSON export
-rooms = [[u'T1: Orwell Hall', u'T2: Turing Hall', u'T3: Lovelace Tent', u'T4: Lamarr Tent', u'T5: Ockham`s Enclosure',
-          u'T6: Noisy Square 1', u'Noisy Square 2', u'Room 101', u'HOAP', u'Rainbow stage', u'OHMroep'],
-         [u'Hardware Hacking', u'Makerlab', u'Sparkshed and Mordor', u'Child Node', u'Food Hacking Base',
-          u'Fablab Alkmaar', u'Area42 Lectures', u'Area42 Workshops', u'Garrison', u'ebCTF']]
+main_rooms = [ 'Saal 1', 'Saal 2', 'Saal G', 'Saal 6']
+rooms = [ [room[0] for room in [
+    ('Saal 1', 359),
+    ('Saal 2', 360),
+    ('Saal G', 361),
+    ('Saal 6', 362),
+    #TODO
+    (u'Sendezentrumsbühne', 1050),
+    ('Podcastingtisch', 1051),
+    ('Saal A.1', 1111),
+    ('Saal A.2', 1112),
+    ('Saal B',   1120),
+    ('Saal C.1', 1131),
+    ('Saal C.2', 1132),
+    ('Saal C.3', 1133),
+    ('Saal C.4', 1134),
+    ('Saal F',   1230),
+    ('Saal 13-14',  1013),
+    #('Saal 14',  1014),
+    ('Lounge DisKo',   1090),
+    # TODO: Lounge Sections
+]]]
 flatrooms = [item for sublist in rooms for item in sublist]
-tracks = ['Observe', 'Hack', 'Make', 'Kids', 'Noisy Square']
-types = ['lecture', 'podium', 'demonstration', 'workshop', 'lightning_talk', 'meeting', 'film_screening',
-         'art_performance', 'art_installation', 'other']
+tracks = []
+types = []
+#tracks = [
+#
+#    'Space', 'Ethics, Society & Politics', 'CCC', 'Science', 'Hardware & Making', 'Security',
+#    'Art & Culture', 'Entertainment',
+#          ]
+#types = ['lecture', 'podium', 'demonstration', 'workshop', 'lightning_talk', 'meeting', 'film_screening',
+#         'art_performance', 'art_installation', 'other']
 days = {}
+
+def convert_url_to_id(url):
+    byte_url = url.encode('utf-8')
+    return hashlib.md5(byte_url).hexdigest()
+
 
 
 class Speaker(object):
@@ -29,15 +60,15 @@ class Speaker(object):
 
     @classmethod
     def get_by_id(cls, id):
-        return cls.by_id[id]
+        return cls.by_id[str(id)]
 
     @classmethod
     def all_speakers(cls):
         return cls.by_id.values()
 
     def __init__(self, speaker_dict):
-        self.id = int(speaker_dict['id'])
-        self.picture = speaker_dict['avatar_file_name']
+        self.id = str(speaker_dict['id'])
+        self.picture = speaker_dict['image']
         self.name = speaker_dict['public_name']
         self.abstract = speaker_dict['abstract']
         self.description = speaker_dict['description']
@@ -94,9 +125,9 @@ class Event(object):
                 if not room in self.lightning:
                     self.lightning[room] = defaultdict(list)
                 self.lightning[room][self.day * 100 + hour].append(self)
-            elif self.start.minute % 15 != 0:
-                print "Not adding event {0} because it does not start on 15 minute boundary".format(self.id)
-                return
+#            elif self.start.minute % 15 != 0:
+#                print ("Not adding event {0} because it does not start on 15 minute boundary".format(self.id))
+#                return
         else:
             self.start = None
 
@@ -107,17 +138,17 @@ class Event(object):
                 if self.type == 'lightning_talk':
                     self.room = None
                 else:
-                    print "Not adding event {0} because duration is not on a 15 minute boundary".format(self.id)
+                    print ("Not adding event {0} because duration is not on a 15 minute boundary".format(self.id))
                     return
         else:
             self.duration = None
 
         if self.room is not None and self.room not in flatrooms:
-            print u"Can't find room {0}".format(room)
+            print (u"Can't find room {0}".format(room))
 
         if self.track:
             if self.track not in tracks:
-                print u"Can't find track {0}".format(self.track)
+                print (u"Can't find track {0}".format(self.track))
             else:
                 self.by_track[self.track].append(self)
 
@@ -130,9 +161,13 @@ class Event(object):
 
         for speaker_dict in event_dict['persons']:
             try:
-                speaker = Speaker.get_by_id(int(speaker_dict['id']))
+                if 'url' in speaker_dict:
+                    speaker_id = convert_url_to_id(speaker_dict['url'])
+                else:
+                    speaker_id = speaker_dict['id']
+                speaker = Speaker.get_by_id(speaker_id)
             except KeyError:
-                print u"Speaker {0} ({0}) not found".format(speaker_dict['full_public_name'], speaker_dict['id'])
+                print (u"Speaker {0} ({0}) not found".format(speaker_dict['full_public_name'], speaker_dict['id']))
             else:
                 self.speakers.append(speaker)
                 speaker.events.append(self)
@@ -145,7 +180,7 @@ class Event(object):
         if not self.duration:
             return None
 
-        return self.duration.seconds / (15 * 60)
+        return self.duration.seconds // (15 * 60)
 
     @property
     def start_datetime(self):
@@ -161,40 +196,79 @@ class Event(object):
 
 
 def parse_events(filename):
+    global tracks, rooms, types, flatrooms
     with open(filename) as f:
         schedule = json.load(f)
 
-    for e in schedule['schedule']['conference']['unscheduled']:
-        Event(e)
+    conference = schedule['schedule']['conference']
+    tracks = []
+    types = []
+    rooms = []
+    for day in conference['days']:
+        for room_name, events in day['rooms'].items():
+            rooms.append(room_name.replace('Hall', 'Saal'))
+            for event in events:
+                tracks.append(event['track'])
+                types.append(event['type'])
+
+    tracks = sorted(set(tracks))
+    rooms = set(rooms)
+    flatrooms = sorted(rooms)
+    subrooms = sorted(set([r for r in rooms if r not in main_rooms ]))
+    rooms = [ sorted(rooms-set(subrooms)), subrooms ]
+    types = sorted(set(types))
 
     for day in schedule['schedule']['conference']['days']:
         number = int(day['index']) + 1
         day_date = datetime.strptime(day['date'], "%Y-%m-%d").date()
+        day_start = parser.parse(day['day_start']).replace(tzinfo=None)
+        day_end = parser.parse(day['day_end']).replace(tzinfo=None)
         days[number] = {'number': number, 'date': day_date, 'start': None, 'end': None}
         for room, events in day['rooms'].items():
             for event_dict in events:
-                event = Event(event_dict, day['index'], room)
+                event = Event(event_dict, day['index'], room.replace('Hall', 'Saal'))
 
                 if not event.id in Event.by_id:
                     continue
 
-                if not days[number]['start'] or days[number]['start'] > event.start_datetime:
+                if days[number]['start'] is None:
+                    days[number]['start'] = event.start_datetime
+                elif days[number]['start'] > event.start_datetime and event.start_datetime > day_start:
                     days[number]['start'] = event.start_datetime
 
-                if not days[number]['end'] or days[number]['end'] < event.end_datetime:
+                if days[number]['end'] is None:
+                    days[number]['end'] = event.end_datetime
+                elif days[number]['end'] < event.end_datetime and event.end_datetime <= day_end:
                     days[number]['end'] = event.end_datetime
 
-    for event_list in Event.by_track.values():
-        event_list.sort(cmp=lambda x, y: cmp(x.start_datetime, y.start_datetime))
-
-    for event_list in Event.by_type.values():
-        event_list.sort(cmp=lambda x, y: cmp(x.start_datetime, y.start_datetime))
+            print(days)
 
 
-def parse_speakers(filename):
+def parse_speakers(filename, schedule_filename):
     with open(filename) as f:
-        for p in json.load(f):
+        for p in json.load(f)['schedule_speakers']['speakers']:
             Speaker(p)
+
+    with open(schedule_filename) as f:
+        for day in json.load(f)['schedule']['conference']['days']:
+            for room_name, events in day['rooms'].items():
+                for event in events:
+                    for person in event['persons']:
+                        if 'url' in person:
+                            fake_dict = dict(
+                                id=convert_url_to_id(person['url']),
+                                image=None,
+                                public_name=person['public_name'],
+                                abstract=None,
+                                description=None
+                            )
+                            Speaker(fake_dict)
+                        elif event['track'] in ['Podcastingtisch', 'Sendezentrumsbühne']:
+                            person['image'] = None
+                            person['abstract'] = None
+                            person['description'] = None
+                            Speaker(person)
+
 
 
 def fetch_menu():
@@ -223,7 +297,7 @@ _paragraph_re = re.compile(r'(?:\r\n|\r|\n){2,}')
 
 @evalcontextfilter
 def nl2br(eval_ctx, value):
-    result = u'\n\n'.join(u'<p>%s</p>' % unicode(p).replace(u'\n', u'<br>\n')
+    result = u'\n\n'.join(u'<p>%s</p>' % p.replace(u'\n', u'<br>\n')
                           for p in _paragraph_re.split(escape(value)))
     if eval_ctx.autoescape:
         result = Markup(result)
@@ -255,48 +329,61 @@ def export(menu, output_directory):
             endB = startB + ce.duration
             if (startA < endB) and (endA > startB):
                 concurrent_events.append(ce)
-        concurrent_events.sort(cmp=lambda x, y: cmp(x.start_datetime, y.start_datetime))
+            concurrent_events.sort(key=lambda x: x.start_datetime)
 
         with open(os.path.join(output_directory, "event/{0}.html".format(e.id)), "w") as f:
-            f.write(event_template.render(menu=menu, event=e, concurrent_events=concurrent_events).encode('utf-8'))
+            rendered = event_template.render(menu=menu, event=e, concurrent_events=concurrent_events)
+            f.write(rendered)
 
-    speaker_list = Speaker.all_speakers()
-    speaker_list.sort(cmp=lambda x, y: cmp(x.name.lower(), y.name.lower()))
+    speaker_list = sorted(Speaker.all_speakers(), key=lambda x:x.name.lower())
     for p in speaker_list:
         with open(os.path.join(output_directory, "speaker/{0}.html".format(p.id)), "w") as f:
-            f.write(speaker_template.render(menu=menu, speaker=p).encode('utf-8'))
+            f.write(speaker_template.render(menu=menu, speaker=p))
 
     with open(os.path.join(output_directory, "speakers.html"), "w") as f:
-        f.write(speaker_list_template.render(menu=menu, speaker_list=speaker_list).encode('utf-8'))
+        f.write(speaker_list_template.render(menu=menu, speaker_list=speaker_list))
 
     type_list = []
     for type in types:
         type_list.append({'name': type, 'title': type.replace('_', ' ').capitalize(), 'events': Event.by_type[type]})
     with open(os.path.join(output_directory, "events.html"), "w") as f:
-        f.write(event_list_template.render(menu=menu, event_list=type_list).encode('utf-8'))
+        f.write(event_list_template.render(menu=menu, event_list=type_list))
 
     track_list = []
     for track in tracks:
         track_list.append({'name': track, 'events': Event.by_track[track]})
 
     with open(os.path.join(output_directory, "tracks.html"), "w") as f:
-        f.write(track_list_template.render(menu=menu, track_list=track_list).encode('utf-8'))
+        f.write(track_list_template.render(menu=menu, track_list=track_list))
 
     for day in days.values():
         schedules = []
         for subrooms in rooms:
             day_dict = Event.get_time_and_room_dict(day['number'])
-            start_times = day_dict.keys()
-            start_times.sort()
+            print(day_dict.keys())
+            #start_times = sorted(day_dict.keys())
             schedule = []
             rowspan = {}
 
-            for i in range((day['end'] - day['start']).seconds / (15 * 60)):
+            for i in range((day['end'] - day['start']).seconds // (15 * 60)):
                 start = day['start'] + timedelta(minutes=15 * i)
                 if i == 0 or start.minute == 0 or start.minute == 30:
                     row = [start.strftime("%H:%M")]
                 else:
                     row = [None]
+
+                start_rooms = {}
+                if i > 0:
+                    candidate_earliest_start = day['start'] + timedelta(minutes=15 * (i - 1))
+                else:
+                    candidate_earliest_start = day['start']
+
+                candidate_latest_start = start
+                for event_start, rs in day_dict.items():
+#                    print(i, event_start, candidate_earliest_start, candidate_latest_start)
+                    if candidate_earliest_start < event_start <= candidate_latest_start:
+                        for room, event in rs.items():
+                            start_rooms[room] = event
 
                 for room in subrooms:
                     lightning_talks = []
@@ -310,10 +397,14 @@ def export(menu, output_directory):
                         item['lightning'] = True
                         item['talks'] = lightning_talks
                         row.append(item)
-                    elif room in day_dict[start]:
-                        event = day_dict[start][room]
+                    elif room in day_dict[start] and room in start_rooms:
+                        event = start_rooms[room]
                         row.append(event)
-                        rowspan[room] = event.slots - 1
+                        end = datetime.combine(day['start'], event.start) + event.duration
+                        if end >  day['end']:
+                            rowspan[room ] = (day['end'] - end).seconds // 15
+                        else:
+                            rowspan[room] = event.slots - 1
                     else:
                         row.append(None)
                 schedule.append(row)
@@ -321,10 +412,10 @@ def export(menu, output_directory):
             schedules.append(schedule)
 
         with open(os.path.join(output_directory, "day_{0}.html".format(day['number'])), "w") as f:
-            f.write(day_template.render(menu=menu, day=day, schedules=schedules, rooms=rooms).encode('utf-8'))
+            f.write(day_template.render(menu=menu, day=day, schedules=schedules, rooms=rooms))
 
     with open(os.path.join(output_directory, "icalxcaljson.html"), "w") as f:
-        f.write(icalxcaljson_template.render(menu=menu, icalxcaljson=True).encode('utf-8'))
+        f.write(icalxcaljson_template.render(menu=menu, icalxcaljson=True))
 
     shutil.copy("schedule.css", os.path.join(output_directory, "schedule.css"))
     shutil.copy(os.path.join(output_directory, "day_1.html"), os.path.join(output_directory, "index.html"))
@@ -332,16 +423,17 @@ def export(menu, output_directory):
 
 if __name__ == "__main__":
     if len(sys.argv) != 7:
-        print "Usage: {0} schedule.json speakers.json schedule.xcal schedule.ics schedule.xml output_directory".format(
-            sys.argv[0])
+        print ("Usage: {0} schedule.json speakers.json schedule.xcal schedule.ics schedule.xml output_directory".format(
+            sys.argv[0]))
         sys.exit(1)
 
     output_directory = sys.argv[6]
 
     makedirs([os.path.join(output_directory, "event"),
               os.path.join(output_directory, "speaker")])
-    menu = fetch_menu()
-    parse_speakers(sys.argv[2])
+    menu = 'FIXME!!' #fetch_menu()
+
+    parse_speakers(sys.argv[2], sys.argv[1])
     parse_events(sys.argv[1])
     shutil.copy(sys.argv[1], os.path.join(output_directory, "schedule.json"))
     shutil.copy(sys.argv[2], os.path.join(output_directory, "speakers.json"))

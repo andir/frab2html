@@ -24,7 +24,7 @@
     <h4>Links</h4>
     <ul>
     {% for link in event.links %}
-    <li><a href="{{ link.url }}">{{ link.title }}</a></li>
+    <li><a href="{{ link.url }}">{{ link['title'] }}</a></li>
     {% endfor %}
     </ul>
     {% endif %}
@@ -32,7 +32,7 @@
     <h4>Concurrent events</h4>
     <ul>
         {%- for event in concurrent_events -%}
-        <li> <a href="{{ event.id }}.html">{{ event.title }}</a>
+        <li> <a href="{{ event.id }}.html">{{ event['title'] }}</a>
             in {{ event.room }} at {{ event.start.strftime("%H:%M") }}
             {%- endfor %}
     </ul>

@@ -46,3 +46,13 @@
     padding: 0;
     list-style: none;
 }
+
+div.event.self-organized-sessions {
+    background-color: #b2ecbd;
+    border-color: #47ecab;
+}
+
+div.event.track-self-organized-sessions div.event-header {
+     background: #3c844c;
+     color: white;
+}
